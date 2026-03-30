@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World 2050 — Technologies</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .hero-tech {
+      background: radial-gradient(ellipse 70% 50% at 50% 40%, #000e1f 0%, var(--void) 70%);
+    }
+    .orb-t1 { width:500px;height:500px;background:radial-gradient(circle,#b44fff20 0%,transparent 70%);top:-80px;right:-100px; }
+    .orb-t2 { width:400px;height:400px;background:radial-gradient(circle,#00f5ff12 0%,transparent 70%);bottom:80px;left:-80px; }
+
+    /* tech categories */
+    .cat-tabs { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:56px; }
+    .cat-tab {
+      font-family:'Share Tech Mono',monospace;font-size:.7rem;
+      letter-spacing:.18em;text-transform:uppercase;
+      padding:10px 22px;border-radius:3px;cursor:none;
+      border:1px solid var(--border);background:transparent;
+      color:var(--text-dim);transition:all .25s;
+    }
+    .cat-tab:hover, .cat-tab.active {
+      border-color:var(--purple);color:var(--purple);
+      background:rgba(180,79,255,.06);
+    }
+
+    /* tech card */
+    .tech-card {
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:10px;padding:30px;
+      transition:all .3s;position:relative;overflow:hidden;
+    }
+    .tech-card:hover { transform:translateY(-5px);border-color:var(--cyan);box-shadow:0 20px 50px rgba(0,245,255,.07); }
+    .tech-card::after {
+      content:'';position:absolute;
+      bottom:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,var(--cyan),var(--purple));
+      transform:scaleX(0);transform-origin:left;
+      transition:transform .4s;
+    }
+    .tech-card:hover::after { transform:scaleX(1); }
+    .tech-icon { font-size:2.8rem;margin-bottom:18px;display:block; }
+    .tech-card h3 { color:var(--white);margin-bottom:10px; }
+    .tech-card p { color:var(--text-dim);font-size:.88rem;line-height:1.7; }
+    .tech-meta { margin-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px; }
+    .tech-year { font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim); }
+
+    /* maturity bar */
+    .maturity-row { display:flex;align-items:center;gap:12px;margin-top:12px; }
+    .maturity-row span { font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--text-dim);white-space:nowrap; }
+    .maturity-bar { flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden; }
+    .maturity-fill { height:100%;border-radius:2px; }
+
+    /* featured tech -->
+    .featured-tech {
+      display:grid;grid-template-columns:1fr 1fr;gap:0;
+      border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    }
+    @media(max-width:768px){ .featured-tech{grid-template-columns:1fr;} }
+    .featured-visual {
+      background:linear-gradient(135deg,#000e1f,#001433);
+      display:flex;align-items:center;justify-content:center;
+      font-size:10rem;position:relative;overflow:hidden;
+      min-height:320px;
+    }
+    .featured-visual::before {
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(circle at 50% 50%,rgba(0,245,255,.1),transparent 70%);
+      animation:featPulse 3s ease-in-out infinite;
+    }
+    @keyframes featPulse{ 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.1)} }
+    .featured-info { padding:48px;background:var(--panel2); }
+    .featured-info h2 { color:var(--white);margin-bottom:16px; }
+    .featured-info p { color:var(--text-dim);font-size:.95rem;line-height:1.8;margin-bottom:24px; }
+    .spec-row { display:flex;gap:8px;align-items:center;margin-bottom:10px; }
+    .spec-key { font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text-dim);min-width:120px; }
+    .spec-val { font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--cyan); }
+
+    /* comparison table */
+    .comp-table { width:100%;border-collapse:collapse;margin-top:32px; }
+    .comp-table th {
+      font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-dim);
+      padding:14px 20px;border-bottom:1px solid var(--border);text-align:left;
+    }
+    .comp-table td {
+      padding:14px 20px;border-bottom:1px solid rgba(13,42,69,.5);
+      font-size:.88rem;color:var(--text-dim);
+    }
+    .comp-table tr:hover td { background:rgba(0,245,255,.02);color:var(--text); }
+    .comp-table .name-cell { color:var(--white);font-weight:600; }
+
+    /* roadmap */
+    .roadmap { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0; }
+    .roadmap-item {
+      padding:32px 24px;
+      border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      position:relative;
+    }
+    .roadmap-item:nth-child(even) { border-right-color:transparent; }
+    .roadmap-decade {
+      font-family:'Orbitron',monospace;font-size:.75rem;font-weight:700;
+      color:var(--cyan);letter-spacing:.15em;margin-bottom:12px;
+    }
+    .roadmap-item h4 { color:var(--white);margin-bottom:8px;font-size:.9rem; }
+    .roadmap-item p { color:var(--text-dim);font-size:.82rem;line-height:1.6; }
+    .roadmap-num {
+      position:absolute;top:16px;right:20px;
+      font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;
+      color:rgba(0,245,255,.07);
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="home.html">WORLD<span>2050</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html">Home</a></li>
+    <li><a href="animals.html">Animals</a></li>
+    <li><a href="technologies.html">Technologies</a></li>
+    <li><a href="present_world.html">Present World</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="pulse"></span>
+    <span id="nav-clock">2050 / --:--:--</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero hero-tech">
+  <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:.45;"></canvas>
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb-t1"></div>
+  <div class="hero-orb orb-t2"></div>
+  <div class="scan-line"></div>
+  <div style="position:relative;z-index:2;">
+    <span class="section-label fade-up">TECHNOLOGY COMPENDIUM 2050</span>
+    <h1 class="fade-up delay-1" style="color:var(--white);">TECHNOLOGIES<br><span class="hl-purple">OF 2050</span></h1>
+    <p class="fade-up delay-2" style="max-width:560px;margin:0 auto;color:var(--text-dim);font-size:1.1rem;">
+      Every tool, system, and invention that defines life in the mid-21st century — from the quantum to the biological.
+    </p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="grid-4 fade-up">
+      <div class="stat-box"><span class="stat-num" data-target="340" data-suffix="%">0</span><span class="stat-label">Compute Growth vs 2025</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="87" data-suffix="%">0</span><span class="stat-label">Renewable Energy Use</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="4.2" data-suffix="B">0</span><span class="stat-label">Neural Interface Users</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="99" data-suffix=".1%">0</span><span class="stat-label">Autonomous Vehicle Rate</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURED TECH -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Spotlight Technology</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:40px;">Neural Mesh Interface</h2>
+    <div class="featured-tech fade-up delay-2">
+      <div class="featured-visual">🧠</div>
+      <div class="featured-info">
+        <span class="badge badge-cyan" style="margin-bottom:20px;display:inline-block;">CLASS 1 — CONSUMER DEVICE</span>
+        <h2>NeuroMesh X9</h2>
+        <p>
+          A non-surgical, nano-filament neural interface that rests on the scalp and integrates with cortical signals. Users experience seamless thought-to-device communication, real-time language translation in 340 languages, memory augmentation, and cognitive acceleration modules.
+        </p>
+        <div class="spec-row"><span class="spec-key">LAUNCH YEAR</span><span class="spec-val">2041</span></div>
+        <div class="spec-row"><span class="spec-key">LATENCY</span><span class="spec-val">0.4ms (thought-to-action)</span></div>
+        <div class="spec-row"><span class="spec-key">BANDWIDTH</span><span class="spec-val">2.4 Tbps neural stream</span></div>
+        <div class="spec-row"><span class="spec-key">USERS (2050)</span><span class="spec-val">4.2 Billion active</span></div>
+        <div class="spec-row"><span class="spec-key">POWER SOURCE</span><span class="spec-val">Body heat harvesting</span></div>
+        <div style="margin-top:20px;">
+          <span class="badge badge-green">FULLY CONSUMER</span>&nbsp;
+          <span class="badge badge-purple">AI INTEGRATED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH GRID -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Technology Database</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:24px;">All Active Technologies</h2>
+
+    <div class="cat-tabs fade-up delay-2">
+      <button class="cat-tab active" onclick="filterTech('all',this)">All</button>
+      <button class="cat-tab" onclick="filterTech('computing',this)">Computing</button>
+      <button class="cat-tab" onclick="filterTech('energy',this)">Energy</button>
+      <button class="cat-tab" onclick="filterTech('bio',this)">Biotech</button>
+      <button class="cat-tab" onclick="filterTech('transport',this)">Transport</button>
+      <button class="cat-tab" onclick="filterTech('space',this)">Space</button>
+    </div>
+
+    <div id="tech-grid" class="grid-3">
+      <div class="tech-card fade-up" data-cat="computing">
+        <span class="tech-icon">⚛️</span>
+        <h3>Quantum-Photon Processor</h3>
+        <p>Photonic qubits operating at room temperature. 10,000-qubit chips power everything from weather prediction to pharmaceutical design.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="95%" style="background:linear-gradient(90deg,var(--cyan),var(--green));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-cyan">COMPUTING</span><span class="tech-year">DEPLOYED: 2038</span></div>
+      </div>
+      <div class="tech-card fade-up delay-1" data-cat="bio">
+        <span class="tech-icon">🧬</span>
+        <h3>CRISPR-X Molecular Editor</h3>
+        <p>Sixth-generation gene editing with 99.99% precision. Operates at body temperature via nanoscale protein delivery. Cures 800+ genetic diseases.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="90%" style="background:linear-gradient(90deg,var(--green),var(--cyan));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-green">BIOTECH</span><span class="tech-year">DEPLOYED: 2036</span></div>
+      </div>
+      <div class="tech-card fade-up delay-2" data-cat="energy">
+        <span class="tech-icon">☀️</span>
+        <h3>Perovskite Solar Mesh</h3>
+        <p>Ultra-thin, spray-applied solar film achieves 58% efficiency. Coats buildings, roads, clothing — turning every surface into a power source.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="88%" style="background:linear-gradient(90deg,var(--amber),var(--green));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-amber">ENERGY</span><span class="tech-year">DEPLOYED: 2033</span></div>
+      </div>
+      <div class="tech-card fade-up" data-cat="transport">
+        <span class="tech-icon">🚀</span>
+        <h3>Maglev Sub-Orbital Craft</h3>
+        <p>Hydrogen-fueled sub-orbital transport connects continents in under 90 minutes. New York to Tokyo in 82 minutes — daily commercial service.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="72%" style="background:linear-gradient(90deg,var(--purple),var(--cyan));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-purple">TRANSPORT</span><span class="tech-year">DEPLOYED: 2044</span></div>
+      </div>
+      <div class="tech-card fade-up delay-1" data-cat="energy">
+        <span class="tech-icon">⚡</span>
+        <h3>Commercial Fusion Grid</h3>
+        <p>Compact tokamak reactors 40m in diameter power entire cities. 220 operational globally as of 2050, supplying 31% of world electricity.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="80%" style="background:linear-gradient(90deg,var(--cyan),var(--amber));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-amber">ENERGY</span><span class="tech-year">DEPLOYED: 2035</span></div>
+      </div>
+      <div class="tech-card fade-up delay-2" data-cat="computing">
+        <span class="tech-icon">🤖</span>
+        <h3>AGI Co-Pilot Framework</h3>
+        <p>Standardized interfaces for human-AGI collaboration in science, law, medicine. Every professional works alongside an AGI assistant by law in most nations.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="97%" style="background:linear-gradient(90deg,var(--purple),var(--red));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-purple">COMPUTING</span><span class="tech-year">DEPLOYED: 2029</span></div>
+      </div>
+      <div class="tech-card fade-up" data-cat="bio">
+        <span class="tech-icon">🫀</span>
+        <h3>Bioreactor Organ Printing</h3>
+        <p>Patient-matched organs grown in 72 hours from stem cells. Transplant waiting lists eliminated. Heart, liver, lung, kidney — all printable by 2050.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="92%" style="background:linear-gradient(90deg,var(--red),var(--green));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-green">BIOTECH</span><span class="tech-year">DEPLOYED: 2040</span></div>
+      </div>
+      <div class="tech-card fade-up delay-1" data-cat="space">
+        <span class="tech-icon">🌙</span>
+        <h3>Lunar Helium-3 Mining</h3>
+        <p>Automated crawler networks extract helium-3 from the lunar regolith. Fuels Earth fusion reactors — 1 tonne provides 6GW·year of clean energy.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="55%" style="background:linear-gradient(90deg,var(--cyan),var(--purple));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-cyan">SPACE</span><span class="tech-year">DEPLOYED: 2047</span></div>
+      </div>
+      <div class="tech-card fade-up delay-2" data-cat="transport">
+        <span class="tech-icon">🚗</span>
+        <h3>Swarm Mobility Network</h3>
+        <p>Self-organising autonomous pods share real-time routes. Eliminates traffic — average city commute under 11 minutes globally. Private ownership at 3%.</p>
+        <div class="maturity-row"><span>MATURITY</span><div class="maturity-bar"><div class="maturity-fill prog-fill" data-width="99%" style="background:linear-gradient(90deg,var(--green),var(--amber));width:0"></div></div></div>
+        <div class="tech-meta"><span class="badge badge-amber">TRANSPORT</span><span class="tech-year">DEPLOYED: 2031</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROADMAP -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Innovation Timeline</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:48px;">How We Got Here</h2>
+    <div class="roadmap fade-up delay-2" style="border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div class="roadmap-item">
+        <div class="roadmap-decade">2025–2030</div>
+        <h4>AGI & Quantum Dawn</h4>
+        <p>First AGI systems deployed. Room-temperature superconductors discovered. Neural interfaces exit lab environments.</p>
+        <span class="roadmap-num">01</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-decade">2030–2035</div>
+        <h4>Energy Revolution</h4>
+        <p>Commercial fusion online. Perovskite solar achieves 50% efficiency. Global renewables surpass 60%.</p>
+        <span class="roadmap-num">02</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-decade">2035–2040</div>
+        <h4>Biological Mastery</h4>
+        <p>CRISPR-X approved globally. Organ printing enters hospitals. First engineered animals released into ecosystems.</p>
+        <span class="roadmap-num">03</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-decade">2040–2045</div>
+        <h4>Neural Integration</h4>
+        <p>Mass consumer neural interfaces. Sub-orbital transport commercial. AGI manages 40% of global infrastructure.</p>
+        <span class="roadmap-num">04</span>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-decade">2045–2050</div>
+        <h4>Space Economy</h4>
+        <p>Lunar mining operational. Mars colony at 1,200 residents. Asteroid mining provides rare earth elements.</p>
+        <span class="roadmap-num">05</span>
+      </div>
+      <div class="roadmap-item" style="border-right:none;">
+        <div class="roadmap-decade">2050 →</div>
+        <h4>The Frontier</h4>
+        <p>Molecular assembly, consciousness uploading research, and dyson swarm feasibility studies underway.</p>
+        <span class="roadmap-num">06</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><p style="font-family:'Orbitron',monospace;font-weight:700;color:var(--purple);margin-bottom:4px;font-size:.85rem;">TECH DATABASE 2050</p><p>Technology Compendium — Updated quarterly by the Global Innovation Registry.</p></div>
+  <div style="display:flex;gap:24px;"><a href="home.html">Home</a><a href="animals.html">Animals</a><a href="present_world.html">Present</a></div>
+  <p>© 2050 Earth Prediction Initiative</p>
+</footer>
+
+<script src="main.js"></script>
+<script>
+  function filterTech(cat, btn) {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tech-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World 2050 — Present World (2025)</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .hero-present {
+      background: radial-gradient(ellipse 70% 50% at 50% 40%, #120a00 0%, var(--void) 70%);
+    }
+    .orb-p1 { width:500px;height:500px;background:radial-gradient(circle,#ffb80014 0%,transparent 70%);top:-80px;left:-100px; }
+    .orb-p2 { width:350px;height:350px;background:radial-gradient(circle,#ff336614 0%,transparent 70%);bottom:50px;right:-50px; }
+
+    /* comparison panel */
+    .compare-panel {
+      display:grid;grid-template-columns:1fr 1fr;
+      border:1px solid var(--border);border-radius:10px;overflow:hidden;
+      margin-bottom:24px;
+    }
+    @media(max-width:600px){ .compare-panel{grid-template-columns:1fr;} }
+    .comp-now { background:linear-gradient(135deg,#0a1500,#0f1f00);border-right:1px solid var(--border);padding:32px; }
+    .comp-fut  { background:var(--panel);padding:32px; }
+    .comp-label {
+      font-family:'Share Tech Mono',monospace;font-size:.65rem;
+      letter-spacing:.25em;text-transform:uppercase;margin-bottom:16px;display:block;
+    }
+    .comp-num {
+      font-family:'Orbitron',monospace;font-size:2.4rem;font-weight:800;
+      line-height:1;margin-bottom:8px;display:block;
+    }
+    .comp-desc { font-size:.85rem;color:var(--text-dim);line-height:1.6; }
+
+    /* issue cards */
+    .issue-card {
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:8px;padding:28px;
+      transition:all .3s;
+    }
+    .issue-card:hover { border-color:var(--amber);transform:translateY(-4px); }
+    .issue-icon { font-size:2.4rem;margin-bottom:14px;display:block; }
+    .issue-card h3 { color:var(--white);margin-bottom:10px; }
+    .issue-card p { font-size:.88rem;color:var(--text-dim);line-height:1.7; }
+    .issue-meter { margin-top:16px; }
+    .issue-meter-label {
+      display:flex;justify-content:space-between;
+      font-family:'Share Tech Mono',monospace;font-size:.63rem;
+      color:var(--text-dim);margin-bottom:6px;
+    }
+
+    /* data table */
+    .data-table { width:100%;border-collapse:collapse; }
+    .data-table th {
+      font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-dim);
+      padding:14px 20px;border-bottom:1px solid var(--border);text-align:left;
+      background:rgba(7,21,37,.6);
+    }
+    .data-table td {
+      padding:13px 20px;border-bottom:1px solid rgba(13,42,69,.5);
+      font-size:.87rem;color:var(--text-dim);
+    }
+    .data-table tr:hover td { background:rgba(255,184,0,.02);color:var(--text); }
+    .data-table .metric { color:var(--white);font-weight:600; }
+    .trend-up   { color:var(--green); }
+    .trend-down { color:var(--red); }
+    .trend-flat { color:var(--amber); }
+
+    /* news feed style */
+    .event-item {
+      display:flex;gap:20px;padding:20px 0;
+      border-bottom:1px solid rgba(13,42,69,.6);
+    }
+    .event-item:last-child { border-bottom:none; }
+    .event-date {
+      font-family:'Share Tech Mono',monospace;font-size:.65rem;
+      color:var(--text-dim);min-width:90px;padding-top:3px;
+    }
+    .event-content h4 { color:var(--white);margin-bottom:6px;font-size:.92rem; }
+    .event-content p  { color:var(--text-dim);font-size:.85rem;line-height:1.6; }
+
+    /* warning banner */
+    .warn-banner {
+      background:linear-gradient(135deg,rgba(255,51,102,.07),rgba(255,184,0,.05));
+      border:1px solid rgba(255,51,102,.3);
+      border-radius:8px;padding:28px 32px;
+      display:flex;gap:20px;align-items:flex-start;margin-bottom:48px;
+    }
+    .warn-banner .icon { font-size:2.2rem;flex-shrink:0; }
+    .warn-banner h3 { color:var(--red);margin-bottom:8px; }
+    .warn-banner p { color:var(--text-dim);font-size:.9rem; }
+
+    /* sector grid */
+    .sector-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px; }
+    .sector-item {
+      padding:20px 24px;
+      background:var(--panel);
+      border:1px solid var(--border);border-radius:6px;
+    }
+    .sector-item h4 { color:var(--white);margin-bottom:8px;font-size:.88rem; }
+    .sector-item p  { font-size:.82rem;color:var(--text-dim); }
+    .sector-icon { font-size:1.8rem;margin-bottom:10px;display:block; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="home.html">WORLD<span>2050</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html">Home</a></li>
+    <li><a href="animals.html">Animals</a></li>
+    <li><a href="technologies.html">Technologies</a></li>
+    <li><a href="present_world.html">Present World</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="pulse"></span>
+    <span id="nav-clock">2050 / --:--:--</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero hero-present">
+  <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:.4;"></canvas>
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb-p1"></div>
+  <div class="hero-orb orb-p2"></div>
+  <div class="scan-line"></div>
+  <div style="position:relative;z-index:2;">
+    <span class="section-label fade-up" style="color:var(--amber);">HISTORICAL ARCHIVE — YEAR 2025</span>
+    <h1 class="fade-up delay-1" style="color:var(--white);">THE WORLD<br><span style="color:var(--amber);">AS IT WAS</span></h1>
+    <p class="fade-up delay-2" style="max-width:600px;margin:0 auto;color:var(--text-dim);font-size:1.1rem;">
+      Looking back from 2050 — the data, crises, and turning points of 2025 that set the world on the path we now walk.
+    </p>
+    <div class="fade-up delay-3" style="margin-top:32px;">
+      <span class="badge badge-amber">ARCHIVE: 2025</span>&nbsp;&nbsp;
+      <span class="badge badge-red">TIPPING POINT ERA</span>
+    </div>
+  </div>
+</section>
+
+<!-- WARNING -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="warn-banner fade-up">
+      <div class="icon">⚠️</div>
+      <div>
+        <h3>Historical Retrospective Notice</h3>
+        <p>You are viewing archived data from 2025 — as analysed from the vantage point of 2050. Many indicators shown here were at critical levels. Some were reversed; others were not. This archive exists so that future generations understand what was knowable — and what was ignored.</p>
+      </div>
+    </div>
+
+    <!-- comparison panels -->
+    <span class="section-label fade-up">2025 vs 2050</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:32px;">Then and Now</h2>
+
+    <div class="compare-panel fade-up delay-2">
+      <div class="comp-now">
+        <span class="comp-label" style="color:var(--amber);">2025 — Then</span>
+        <span class="comp-num" style="color:var(--amber);">8.2B</span>
+        <div class="comp-desc">World population. Urban migration accelerating. India surpassed China as most populous nation. Food security concerns in 34 countries.</div>
+      </div>
+      <div class="comp-fut">
+        <span class="comp-label" style="color:var(--cyan);">2050 — Now</span>
+        <span class="comp-num" style="color:var(--cyan);">9.7B</span>
+        <div class="comp-desc">Growth slowed to 0.4%/year. Vertical megacities house 72% of population. Synthetic food provides 40% of global calories, relieving farmland pressure.</div>
+      </div>
+    </div>
+
+    <div class="compare-panel fade-up delay-2">
+      <div class="comp-now">
+        <span class="comp-label" style="color:var(--amber);">2025 — Then</span>
+        <span class="comp-num" style="color:var(--amber);">+1.4°C</span>
+        <div class="comp-desc">Average global temperature above pre-industrial baseline. Arctic ice loss at 40-year record. Insurance companies withdrawing from coastal markets.</div>
+      </div>
+      <div class="comp-fut">
+        <span class="comp-label" style="color:var(--cyan);">2050 — Now</span>
+        <span class="comp-num" style="color:var(--cyan);">+4°C</span>
+        <div class="comp-desc">Paris Agreement targets missed. 340 million people relocated from flood zones. Carbon capture arrays partially offsetting ongoing emissions from legacy infrastructure.</div>
+      </div>
+    </div>
+
+    <div class="compare-panel fade-up delay-3">
+      <div class="comp-now">
+        <span class="comp-label" style="color:var(--amber);">2025 — Then</span>
+        <span class="comp-num" style="color:var(--amber);">32%</span>
+        <div class="comp-desc">Global electricity from renewables. Solar costs hit record lows. Fossil fuel lobbying blocking faster transition in major economies.</div>
+      </div>
+      <div class="comp-fut">
+        <span class="comp-label" style="color:var(--cyan);">2050 — Now</span>
+        <span class="comp-num" style="color:var(--cyan);">87%</span>
+        <div class="comp-desc">Fusion + solar + wind dominate. Last coal plant shuttered in 2043. Remaining 13% from legacy infrastructure in developing regions under rapid replacement.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CRITICAL ISSUES 2025 -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">2025 Status Report</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:48px;">The Critical Issues of 2025</h2>
+    <div class="grid-3">
+      <div class="issue-card fade-up delay-1">
+        <span class="issue-icon">🌡️</span>
+        <h3>Climate Crisis</h3>
+        <p>CO₂ at 424 ppm. Extreme weather events tripled since 1990. The IPCC's 2024 report called the next 10 years "humanity's last effective window" for course correction.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Severity</span><span style="color:var(--red);">CRITICAL</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="92%" style="background:linear-gradient(90deg,var(--amber),var(--red));"></div></div>
+        </div>
+      </div>
+      <div class="issue-card fade-up delay-2">
+        <span class="issue-icon">💻</span>
+        <h3>AI Development Race</h3>
+        <p>Major nations competing for AGI dominance. Safety standards absent in 80% of countries. OpenAI, DeepMind, and Chinese state labs racing without coordination.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Risk Level</span><span style="color:var(--amber);">HIGH</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="78%" style="background:linear-gradient(90deg,var(--cyan),var(--amber));"></div></div>
+        </div>
+      </div>
+      <div class="issue-card fade-up delay-3">
+        <span class="issue-icon">🦠</span>
+        <h3>Pandemic Preparedness</h3>
+        <p>Post-COVID infrastructure improvements incomplete. WHO funding at 30% below recommended levels. 3 novel zoonotic viruses detected with pandemic potential in 2024.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Readiness</span><span style="color:var(--amber);">MODERATE</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="51%" style="background:linear-gradient(90deg,var(--green),var(--amber));"></div></div>
+        </div>
+      </div>
+      <div class="issue-card fade-up">
+        <span class="issue-icon">💧</span>
+        <h3>Fresh Water Crisis</h3>
+        <p>2.4 billion people lacking safe water access in 2025. Aquifer depletion accelerating in India, US Midwest, and North Africa. Water wars predicted by 2035.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Severity</span><span style="color:var(--red);">CRITICAL</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="88%" style="background:linear-gradient(90deg,var(--cyan),var(--red));"></div></div>
+        </div>
+      </div>
+      <div class="issue-card fade-up delay-1">
+        <span class="issue-icon">⚔️</span>
+        <h3>Geopolitical Tension</h3>
+        <p>Active conflicts in Ukraine, Middle East. Taiwan Strait tensions at Cold War levels. Nuclear arsenal modernisation by all 9 nuclear-armed states accelerating.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Tension</span><span style="color:var(--red);">SEVERE</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="85%" style="background:linear-gradient(90deg,var(--red),var(--amber));"></div></div>
+        </div>
+      </div>
+      <div class="issue-card fade-up delay-2">
+        <span class="issue-icon">📱</span>
+        <h3>Misinformation Ecosystem</h3>
+        <p>AI-generated content accounts for 34% of social media. Election interference via deepfakes documented in 18 countries. Digital literacy infrastructure lagging dangerously.</p>
+        <div class="issue-meter">
+          <div class="issue-meter-label"><span>Impact</span><span style="color:var(--amber);">HIGH</span></div>
+          <div class="prog-bar"><div class="prog-fill" data-width="72%" style="background:linear-gradient(90deg,var(--purple),var(--amber));"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- KEY METRICS TABLE -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Data Archive</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:32px;">World Metrics: 2025 → 2050</h2>
+    <div class="fade-up delay-2" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Indicator</th>
+            <th>2025 Value</th>
+            <th>2050 Value</th>
+            <th>Change</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="metric">Global avg temperature rise</td><td>+1.4°C</td><td>+4.0°C</td><td class="trend-down">▲ +186%</td><td><span class="badge badge-red">WORSENED</span></td></tr>
+          <tr><td class="metric">Renewable energy share</td><td>32%</td><td>87%</td><td class="trend-up">▲ +172%</td><td><span class="badge badge-green">IMPROVED</span></td></tr>
+          <tr><td class="metric">Ocean plastic (MT)</td><td>150M MT</td><td>62M MT</td><td class="trend-up">▼ -59%</td><td><span class="badge badge-cyan">IMPROVING</span></td></tr>
+          <tr><td class="metric">Human life expectancy</td><td>73 yrs</td><td>91 yrs</td><td class="trend-up">▲ +25%</td><td><span class="badge badge-green">IMPROVED</span></td></tr>
+          <tr><td class="metric">Extreme poverty rate</td><td>9.2%</td><td>2.1%</td><td class="trend-up">▼ -77%</td><td><span class="badge badge-green">IMPROVED</span></td></tr>
+          <tr><td class="metric">Vertebrate species extinct</td><td>+200 (2025 alone)</td><td>1,240 total</td><td class="trend-down">▲ ONGOING</td><td><span class="badge badge-red">WORSENING</span></td></tr>
+          <tr><td class="metric">Sea level rise</td><td>+3.7mm/yr</td><td>+28cm total</td><td class="trend-down">▲ ACCELERATING</td><td><span class="badge badge-amber">CRITICAL</span></td></tr>
+          <tr><td class="metric">Internet access</td><td>67%</td><td>99.4%</td><td class="trend-up">▲ +48%</td><td><span class="badge badge-green">NEAR UNIVERSAL</span></td></tr>
+          <tr><td class="metric">Hunger (people affected)</td><td>733M</td><td>120M</td><td class="trend-up">▼ -84%</td><td><span class="badge badge-cyan">IMPROVING</span></td></tr>
+          <tr><td class="metric">Nuclear warheads active</td><td>12,500</td><td>4,200</td><td class="trend-up">▼ -66%</td><td><span class="badge badge-amber">REDUCED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PIVOTAL EVENTS -->
+<section>
+  <div style="max-width:900px;margin:0 auto;">
+    <span class="section-label fade-up">Historical Record</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:48px;">Pivotal Moments of the 2020s</h2>
+    <div class="fade-up delay-2">
+      <div class="event-item">
+        <div class="event-date">2025</div>
+        <div class="event-content">
+          <h4>AI Proliferation Threshold</h4>
+          <p>Large language models reach mainstream global adoption. 800 million users within 3 years. Governments scramble to create regulation; most fail to keep pace with deployment.</p>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-date">2026</div>
+        <div class="event-content">
+          <h4>Arctic Ice-Free Summer</h4>
+          <p>The Arctic Ocean records its first ice-free September. Scientists call it a "point of no return" moment. Methane release from permafrost accelerates past model predictions.</p>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-date">2027</div>
+        <div class="event-content">
+          <h4>Global Water Accord Signed</h4>
+          <p>147 nations sign the Geneva Water Accord, establishing fresh water as a protected human right. First international framework with enforceable sanctions for aquifer over-extraction.</p>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-date">2028</div>
+        <div class="event-content">
+          <h4>First AGI Announcement</h4>
+          <p>A US-based consortium announces verification of AGI. The declaration triggers emergency sessions at the UN and immediate market disruption across 40 industries.</p>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-date">2029</div>
+        <div class="event-content">
+          <h4>Amazon Sovereignty Act</h4>
+          <p>Brazil, Colombia, and Peru sign the Amazonian Sovereignty Act — a binding agreement halting all new deforestation and establishing autonomous Indigenous-governed biopreserves.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTORS -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">State of the World — 2025</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:40px;">Key Sectors Snapshot</h2>
+    <div class="sector-grid">
+      <div class="sector-item fade-up"><span class="sector-icon">🏥</span><h4>Healthcare</h4><p>mRNA vaccines revolutionised. Cancer mortality down 28% since 2015. But 4.5B people still lack basic healthcare access.</p></div>
+      <div class="sector-item fade-up delay-1"><span class="sector-icon">🌾</span><h4>Agriculture</h4><p>Precision farming emerging. Vertical farms in 200+ cities. But 33% of agricultural land severely degraded.</p></div>
+      <div class="sector-item fade-up delay-2"><span class="sector-icon">🏙️</span><h4>Urbanisation</h4><p>56% of humanity in cities. Megacities of 10M+ proliferating. Urban heat islands worsening in tropical zones.</p></div>
+      <div class="sector-item fade-up delay-3"><span class="sector-icon">⚡</span><h4>Energy</h4><p>Solar cheapest energy source in history. Grid storage still bottleneck. Gas still 22% of electricity globally.</p></div>
+      <div class="sector-item fade-up"><span class="sector-icon">🚢</span><h4>Transport</h4><p>EV adoption at 28% of new car sales. Aviation still 2.5% of emissions. Shipping decarbonisation lagging badly.</p></div>
+      <div class="sector-item fade-up delay-1"><span class="sector-icon">📡</span><h4>Communications</h4><p>LEO satellite internet reaching remote areas. 5G in 85 countries. Quantum-encrypted communication networks in early deployment.</p></div>
+      <div class="sector-item fade-up delay-2"><span class="sector-icon">💰</span><h4>Economics</h4><p>Global GDP $110T but inequality at record highs. Automation displacing 14% of jobs annually. UBI pilots in 22 nations.</p></div>
+      <div class="sector-item fade-up delay-3"><span class="sector-icon">🎓</span><h4>Education</h4><p>AI tutors accessible to 1.2B students. But 258M children still out of school. Diploma credentialism beginning to erode.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:60px;">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="quote-block fade-up">
+      "The year 2025 was not the end of anything, nor the beginning of salvation. It was the moment when the choices made by 8 billion people became permanently legible in the geological record."
+      <br><br>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text-dim);">— Earth Climate Archive Commission, 2049 Annual Report</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><p style="font-family:'Orbitron',monospace;font-weight:700;color:var(--amber);margin-bottom:4px;font-size:.85rem;">PRESENT WORLD ARCHIVE</p><p>Historical Data Registry — Records preserved from 2025 baseline surveys.</p></div>
+  <div style="display:flex;gap:24px;"><a href="home.html">Home</a><a href="animals.html">Animals</a><a href="technologies.html">Tech</a></div>
+  <p>© 2050 Earth Prediction Initiative</p>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

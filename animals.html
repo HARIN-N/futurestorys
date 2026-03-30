@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World 2050 — Animal Kingdom</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .hero-animals {
+      background: radial-gradient(ellipse 70% 50% at 50% 40%, #001a0d 0%, var(--void) 70%);
+    }
+    .orb-a1 { width:500px;height:500px;background:radial-gradient(circle,#00ff8820 0%,transparent 70%);top:-60px;right:-80px; }
+    .orb-a2 { width:350px;height:350px;background:radial-gradient(circle,#00f5ff10 0%,transparent 70%);bottom:80px;left:-60px; }
+
+    /* filter tabs */
+    .filter-bar {
+      display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px;
+    }
+    .filter-btn {
+      font-family:'Share Tech Mono',monospace;
+      font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+      padding:8px 20px;border-radius:3px;cursor:none;
+      border:1px solid var(--border);background:transparent;
+      color:var(--text-dim);transition:all .25s;
+    }
+    .filter-btn:hover,.filter-btn.active {
+      border-color:var(--green);color:var(--green);
+      background:rgba(0,255,136,.06);
+    }
+
+    /* animal card */
+    .animal-card {
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:10px;overflow:hidden;
+      transition:all .3s;cursor:none;
+    }
+    .animal-card:hover { transform:translateY(-6px);border-color:var(--green);box-shadow:0 20px 50px rgba(0,255,136,.08); }
+    .animal-card-header {
+      height:160px;display:flex;align-items:center;
+      justify-content:center;font-size:5rem;
+      position:relative;overflow:hidden;
+    }
+    .animal-card-header::after {
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(180deg,transparent 40%,rgba(4,13,24,.9));
+    }
+    .status-dot {
+      position:absolute;top:14px;right:14px;z-index:2;
+      width:10px;height:10px;border-radius:50%;
+    }
+    .status-dot.extinct    { background:#ff3366;box-shadow:0 0 8px #ff3366; }
+    .status-dot.endangered { background:#ffb800;box-shadow:0 0 8px #ffb800; }
+    .status-dot.stable     { background:#00ff88;box-shadow:0 0 8px #00ff88; }
+    .status-dot.engineered { background:#b44fff;box-shadow:0 0 8px #b44fff; }
+    .status-dot.recovered  { background:#00f5ff;box-shadow:0 0 8px #00f5ff; }
+
+    .animal-card-body { padding:20px; }
+    .animal-card-body h3 { color:var(--white);font-size:.92rem;margin-bottom:6px; }
+    .animal-card-body .sci { font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);margin-bottom:12px; }
+    .animal-card-body p { font-size:.85rem;color:var(--text-dim);line-height:1.6; }
+    .animal-meta { display:flex;justify-content:space-between;align-items:center;margin-top:14px; }
+
+    /* conservation map */
+    .region-grid {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;
+    }
+    .region-card {
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:8px;padding:24px;
+    }
+    .region-card h4 { color:var(--white);margin-bottom:12px;font-size:.9rem; }
+    .region-stat { display:flex;justify-content:space-between;align-items:center;margin-bottom:12px; }
+    .region-stat span { font-size:.82rem;color:var(--text-dim); }
+
+    /* legend */
+    .legend { display:flex;flex-wrap:wrap;gap:20px;margin-bottom:32px; }
+    .legend-item { display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text-dim); }
+    .legend-dot { width:10px;height:10px;border-radius:50%; }
+
+    /* fact banner */
+    .fact-banner {
+      background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(0,245,255,.03));
+      border:1px solid rgba(0,255,136,.2);
+      border-radius:8px;padding:32px;
+      display:flex;gap:24px;align-items:flex-start;
+    }
+    .fact-banner .icon { font-size:2.5rem;flex-shrink:0; }
+    .fact-banner h3 { color:var(--green);margin-bottom:8px; }
+    .fact-banner p { color:var(--text-dim);font-size:.92rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="home.html">WORLD<span>2050</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html">Home</a></li>
+    <li><a href="animals.html">Animals</a></li>
+    <li><a href="technologies.html">Technologies</a></li>
+    <li><a href="present_world.html">Present World</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="pulse"></span>
+    <span id="nav-clock">2050 / --:--:--</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero hero-animals">
+  <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:.4;"></canvas>
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb-a1"></div>
+  <div class="hero-orb orb-a2"></div>
+  <div class="scan-line"></div>
+  <div style="position:relative;z-index:2;">
+    <span class="section-label fade-up" style="font-size:.8rem;">BIODIVERSITY DATABASE 2050</span>
+    <h1 class="fade-up delay-1" style="color:var(--white);">ANIMAL<br><span class="hl-green">KINGDOM</span></h1>
+    <p class="fade-up delay-2" style="max-width:560px;margin:0 auto;color:var(--text-dim);font-size:1.1rem;">
+      1,240 species lost. 340 new species catalogued. 12 engineered to survive a hotter world. This is the zoological record of 2050.
+    </p>
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="grid-4 fade-up">
+      <div class="stat-box"><span class="stat-num" data-target="1240" data-suffix="">0</span><span class="stat-label">Species Extinct</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="340" data-suffix="+">0</span><span class="stat-label">New Species</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="12" data-suffix="">0</span><span class="stat-label">Engineered Species</span></div>
+      <div class="stat-box"><span class="stat-num" data-target="38" data-suffix="%">0</span><span class="stat-label">Wildlife Protected</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANIMAL DATABASE -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Species Database</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:24px;">Notable Species of 2050</h2>
+
+    <div class="legend fade-up delay-2">
+      <div class="legend-item"><div class="legend-dot" style="background:#ff3366;box-shadow:0 0 6px #ff3366;"></div>Extinct</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffb800;box-shadow:0 0 6px #ffb800;"></div>Endangered</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#00ff88;box-shadow:0 0 6px #00ff88;"></div>Stable</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#b44fff;box-shadow:0 0 6px #b44fff;"></div>Engineered</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#00f5ff;box-shadow:0 0 6px #00f5ff;"></div>Recovered</div>
+    </div>
+
+    <!-- filter -->
+    <div class="filter-bar fade-up delay-3">
+      <button class="filter-btn active" onclick="filterCards('all',this)">All Species</button>
+      <button class="filter-btn" onclick="filterCards('extinct',this)">Extinct</button>
+      <button class="filter-btn" onclick="filterCards('endangered',this)">Endangered</button>
+      <button class="filter-btn" onclick="filterCards('stable',this)">Stable</button>
+      <button class="filter-btn" onclick="filterCards('engineered',this)">Engineered</button>
+      <button class="filter-btn" onclick="filterCards('recovered',this)">Recovered</button>
+    </div>
+
+    <div id="animal-grid" class="grid-3">
+      <!-- Amur Leopard -->
+      <div class="animal-card fade-up" data-status="extinct">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#1a0a00,#3a1500);">🐆<div class="status-dot extinct"></div></div>
+        <div class="animal-card-body">
+          <h3>Amur Leopard</h3>
+          <div class="sci">Panthera pardus orientalis</div>
+          <p>The last wild Amur Leopard died in 2031. Cryogenic genetic material preserved; de-extinction project initiated in 2048.</p>
+          <div class="animal-meta">
+            <span class="badge badge-red">EXTINCT — 2031</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);">DNA ARCHIVED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coral Mantis -->
+      <div class="animal-card fade-up delay-1" data-status="engineered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#001a1a,#003333);">🦐<div class="status-dot engineered"></div></div>
+        <div class="animal-card-body">
+          <h3>Coral Mantis Shrimp+</h3>
+          <div class="sci">Odontodactylus scyllarus-X2</div>
+          <p>Engineered in 2039 to survive 34°C ocean temps. Now a keystone species in Indo-Pacific restored reefs.</p>
+          <div class="animal-meta">
+            <span class="badge badge-purple">ENGINEERED</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);">POP: 2.4M</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Snow Leopard -->
+      <div class="animal-card fade-up delay-2" data-status="endangered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#0a0a1a,#151530);">🐈<div class="status-dot endangered"></div></div>
+        <div class="animal-card-body">
+          <h3>Snow Leopard</h3>
+          <div class="sci">Panthera uncia</div>
+          <p>Himalayan glacial retreat destroyed 60% of habitat. Only 720 individuals remain in mountain sanctuaries.</p>
+          <div class="animal-meta">
+            <span class="badge badge-amber">CRITICAL — 720 LEFT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blue Whale -->
+      <div class="animal-card fade-up" data-status="recovered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#001020,#002040);">🐋<div class="status-dot recovered"></div></div>
+        <div class="animal-card-body">
+          <h3>Blue Whale</h3>
+          <div class="sci">Balaenoptera musculus</div>
+          <p>Population tripled since 2025 due to ocean shipping lane rerouting and krill restoration programs. A conservation triumph.</p>
+          <div class="animal-meta">
+            <span class="badge badge-cyan">RECOVERED — 28,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monarch Butterfly -->
+      <div class="animal-card fade-up delay-1" data-status="stable">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#1a0f00,#332000);">🦋<div class="status-dot stable"></div></div>
+        <div class="animal-card-body">
+          <h3>Monarch Butterfly</h3>
+          <div class="sci">Danaus plexippus</div>
+          <p>Milkweed corridor networks planted across North America stabilized populations. 400M individuals counted in 2049 migration.</p>
+          <div class="animal-meta">
+            <span class="badge badge-green">STABLE</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);">400M COUNTED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NanoJellyfish -->
+      <div class="animal-card fade-up delay-2" data-status="engineered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#00101a,#001a2e);">🪼<div class="status-dot engineered"></div></div>
+        <div class="animal-card-body">
+          <h3>Biolum Jellyfish-E</h3>
+          <div class="sci">Aequorea victoria-E7</div>
+          <p>Modified to absorb micro-plastics. Released into ocean gyres in 2043 — has removed estimated 4 million tonnes of debris.</p>
+          <div class="animal-meta">
+            <span class="badge badge-purple">ENGINEERED</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);">OCEAN CLEANER</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- African Elephant -->
+      <div class="animal-card fade-up" data-status="endangered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#0f0f00,#1a1a00);">🐘<div class="status-dot endangered"></div></div>
+        <div class="animal-card-body">
+          <h3>African Forest Elephant</h3>
+          <div class="sci">Loxodonta cyclotis</div>
+          <p>Forest loss in the Congo Basin reduced populations to 4,200. Drone-enforced sanctuaries now protect the last herds.</p>
+          <div class="animal-meta">
+            <span class="badge badge-amber">ENDANGERED — 4,200</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dire Wolf Clone -->
+      <div class="animal-card fade-up delay-1" data-status="engineered">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#0a0014,#150025);">🐺<div class="status-dot engineered"></div></div>
+        <div class="animal-card-body">
+          <h3>Neo-Dire Wolf</h3>
+          <div class="sci">Aenocyon dirus-R1 (de-extinct)</div>
+          <p>Controversial de-extinction project using ancient DNA. 80 individuals roam rewilded Patagonia under heavy monitoring.</p>
+          <div class="animal-meta">
+            <span class="badge badge-purple">DE-EXTINCT 2047</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HeatFrog -->
+      <div class="animal-card fade-up delay-2" data-status="stable">
+        <div class="animal-card-header" style="background:linear-gradient(135deg,#0a1500,#142200);">🐸<div class="status-dot stable"></div></div>
+        <div class="animal-card-body">
+          <h3>Desert Rain Frog</h3>
+          <div class="sci">Breviceps macrops</div>
+          <p>Remarkably adapted to rising temperatures. Colonies expanded 300% since 2025 as desert zones widened in southern Africa.</p>
+          <div class="animal-meta">
+            <span class="badge badge-green">THRIVING</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONSERVATION ZONES -->
+<section>
+  <div style="max-width:1200px;margin:0 auto;">
+    <span class="section-label fade-up">Global Conservation</span>
+    <h2 class="fade-up delay-1" style="margin-bottom:48px;">Wildlife Corridors 2050</h2>
+    <div class="region-grid">
+      <div class="region-card fade-up">
+        <h4>🌿 Amazon Biozone</h4>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:16px;">3.2M km² protected under the Amazonian Sovereignty Act of 2035</p>
+        <div class="region-stat"><span>Species Protected</span><span class="hl-green">12,400</span></div>
+        <div class="prog-bar"><div class="prog-fill" data-width="78%" style="background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div>
+        <span style="font-size:.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">78% RECOVERY RATE</span>
+      </div>
+      <div class="region-card fade-up delay-1">
+        <h4>🌊 Pacific Sanctuary Ring</h4>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:16px;">Fishing-free zone across 6.4M km² of the central Pacific</p>
+        <div class="region-stat"><span>Marine Species</span><span class="hl-cyan">8,200</span></div>
+        <div class="prog-bar"><div class="prog-fill" data-width="62%" style="background:linear-gradient(90deg,var(--cyan),var(--purple));"></div></div>
+        <span style="font-size:.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">62% RECOVERY RATE</span>
+      </div>
+      <div class="region-card fade-up delay-2">
+        <h4>🏔️ Himalayan Ice Reserve</h4>
+        <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:16px;">Glacial cooling arrays protecting high-altitude habitats</p>
+        <div class="region-stat"><span>Altitude Species</span><span class="hl-amber">1,840</span></div>
+        <div class="prog-bar"><div class="prog-fill" data-width="34%" style="background:linear-gradient(90deg,var(--amber),var(--red));"></div></div>
+        <span style="font-size:.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">34% RECOVERY RATE</span>
+      </div>
+    </div>
+
+    <!-- fact banner -->
+    <div class="fact-banner fade-up delay-3" style="margin-top:40px;">
+      <div class="icon">🧬</div>
+      <div>
+        <h3>The Biobank Project</h3>
+        <p>The Global Species Cryovault in Svalbard now holds genetic material from 2.1 million species — including 340 fully extinct organisms. De-extinction technology in 2050 can restore any species with 80%+ genome preservation, making today's extinctions potentially reversible tomorrow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><p style="font-family:'Orbitron',monospace;font-weight:700;color:var(--green);margin-bottom:4px;font-size:.85rem;">ANIMAL DATABASE 2050</p><p>Biodiversity Registry — Updated in real-time via satellite fauna monitoring.</p></div>
+  <div style="display:flex;gap:24px;"><a href="home.html">Home</a><a href="technologies.html">Tech</a><a href="present_world.html">Present</a></div>
+  <p>© 2050 Earth Prediction Initiative</p>
+</footer>
+
+<script src="main.js"></script>
+<script>
+  function filterCards(status, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.animal-card').forEach(card => {
+      if (status === 'all' || card.dataset.status === status) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>
